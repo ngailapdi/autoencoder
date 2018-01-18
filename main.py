@@ -57,7 +57,7 @@ class Autoencoder(nn.Module):
 		logits = self.decoder(encoding)
 		return encoding, logits
 
-		
+
 def main():
 	epochs = 20
 	batch_size = 200
@@ -80,8 +80,8 @@ def main():
 	test_image = Variable(test_image[0].unsqueeze(0).cuda())
 	_, out = model(test_image)
 
-	torchvision.utils.save_image(test_image.data, 'orig.png')
-	torchvision.utils.save_image(out.data, 'reconst.png')
+	torchvision.utils.save_image(test_image.data, 'in.png')
+	torchvision.utils.save_image(out.data, 'out.png')
 
 def train(data_loader, size, autoencoder, criterion, optimizer, num_epochs=20):
 	print('Start training')
