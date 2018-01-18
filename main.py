@@ -30,39 +30,24 @@ class Autoencoder(nn.Module):
 	def encoder(self, image):
 		conv1 = self.conv1(image)
 		relu1 = F.relu(conv1) #28x28x16
-		#print('relu1: ', relu1.shape)
 		pool1 = self.pool1(relu1) #14x14x16
-		#print('pool1: ', pool1.shape)
 		conv2 = self.conv2(pool1) #14x14x8
-		#print('conv2: ', conv2.shape)
 		relu2 = F.relu(conv2)
-		#print('relu2: ', relu2.shape)
 		pool2 = self.pool1(relu2) #7x7x8
-		#print('pool2: ', pool2.shape)
 		conv3 = self.conv3(pool2) #7x7x8
-		#print('conv3: ', conv3.shape)
 		relu3 = F.relu(conv3)
-		#print('relu3: ', relu3.shape)
 		pool3 = self.pool2(relu3) #4x4x8
-		#print('pool3: ', pool3.shape)
 		pool3 = pool3.view([image.size(0), 8, 4, 4]).cuda()
 		return pool3
 
 	def decoder(self, encoding):
-		up1 = self.up1(encoding) #7x7x8
-		#print('up1: ', up1.shape)
+		up1 = self.up1(encoding)
 		up_relu1 = F.relu(up1) 
-		#print('up_relu1: ', up_relu1.shape)
-		up2 = self.up2(up_relu1) #14x14x8
-		#print('up2: ', up2.shape)
+		up2 = self.up2(up_relu1) 
 		up_relu2 = F.relu(up2)
-		#print('up_relu2: ', up_relu2.shape)
-		up3 = self.up3(up_relu2) #28x28x16
-		#print('up3: ', up3.shape)
+		up3 = self.up3(up_relu2) 
 		up_relu3 = F.relu(up3)
-		#print('up_relu3: ', up_relu3.shape)
 		logits = self.conv(up_relu3)
-		#print('logits: ', logits.shape)
 		logits = F.sigmoid(logits)
 		logits = logits.view([encoding.size(0), 1, 28, 28]).cuda()
 		return logits
@@ -71,6 +56,8 @@ class Autoencoder(nn.Module):
 		encoding = self.encoder(image)
 		logits = self.decoder(encoding)
 		return encoding, logits
+
+		
 def main():
 	epochs = 20
 	batch_size = 200
@@ -93,12 +80,6 @@ def main():
 	test_image = Variable(test_image[0].unsqueeze(0).cuda())
 	_, out = model(test_image)
 
-	# plt.subplot(0)
-	# plt.imshow(test_image)
-	# plt.subplot(1)
-	# plt.image(out)
-	# plt.subplot_tool()
-	# plt.show()
 	torchvision.utils.save_image(test_image.data, 'orig.png')
 	torchvision.utils.save_image(out.data, 'reconst.png')
 
@@ -119,6 +100,7 @@ def train(data_loader, size, autoencoder, criterion, optimizer, num_epochs=20):
 		print('Epoch loss: {:4f}'.format(epoch_loss))
 	print('Complete training')
 	return autoencoder
+
 if __name__ == '__main__':
 	main()
 
